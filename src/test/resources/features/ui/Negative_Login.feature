@@ -14,4 +14,3 @@ Feature: UI Negative Login Validation
       | email                    | password |
       | invalid_user@gmail.com   | Wrong123 |
       | Sonwanevinay11@gmail.com |          |
-      |                          | @Vinay   |

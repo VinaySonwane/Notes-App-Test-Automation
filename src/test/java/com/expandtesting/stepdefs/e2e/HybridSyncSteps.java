@@ -114,5 +114,35 @@ public class HybridSyncSteps {
                 "API-created note not visible on UI dashboard: " + title
         );
     }
+
+    // ─── TS-E2E-04: API delete → UI disappears ───────────────────
+
+    /**
+     * TS-E2E-04: Deletes the previously API-created note by its stored ID,
+     * then verifies it is no longer visible on the UI dashboard.
+     * Closes the gap in FR-07: "deleted note must disappear from UI".
+     */
+    @When("the note with title {string} is deleted via the API")
+    public void deleteNoteViaApi(String title) {
+        Assert.assertNotNull(
+                apiCreatedNoteId,
+                "No API-created note ID in context — ensure the creation step ran first for: " + title
+        );
+        io.restassured.response.Response response = apiManager.deleteNoteById(apiCreatedNoteId);
+        Assert.assertEquals(
+                response.getStatusCode(), 200,
+                "API DELETE did not return 200 for note: " + title + " (id=" + apiCreatedNoteId + ")"
+        );
+        System.out.println("Deleted via API: " + title + " (id=" + apiCreatedNoteId + ")");
+        apiCreatedNoteId = null;
+    }
+
+    @Then("the note with title {string} should no longer be visible on the UI dashboard")
+    public void noteShouldNoLongerBeVisibleOnUi(String title) {
+        Assert.assertTrue(
+                notesPage.isNoteAbsent(title),
+                "Note still visible on UI dashboard after API deletion: " + title
+        );
+    }
 }
 

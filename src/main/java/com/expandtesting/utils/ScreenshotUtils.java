@@ -15,7 +15,8 @@ public class ScreenshotUtils {
      * Called from Hooks.java which passes the bytes to:
      *   1. scenario.attach()        — via Cucumber event bus (primary)
      *   2. Allure.addAttachment()   — direct Allure lifecycle (secondary)
-     *
+
+
      * No AspectJ / @Attachment needed. Both paths above work on Jenkins
      * without any javaagent argument.
      */
@@ -44,25 +45,3 @@ public class ScreenshotUtils {
         }
     }
 }
-
-
-//package com.expandtesting.utils;
-//
-//import com.expandtesting.drivers.GridDriverManager;
-//import io.qameta.allure.Attachment;
-//import org.openqa.selenium.OutputType;
-//import org.openqa.selenium.TakesScreenshot;
-//
-//public class ScreenshotUtils {
-//
-//    /**
-//     * Captures a screenshot and automatically attaches it to the Allure Report.
-//     */
-//    @Attachment(value = "Test Failure Screenshot", type = "image/png")
-//    public static byte[] takeScreenshotOnFailure() {
-//        if (GridDriverManager.getDriver() != null) {
-//            return ((TakesScreenshot) GridDriverManager.getDriver()).getScreenshotAs(OutputType.BYTES);
-//        }
-//        return new byte[0];
-//    }
-//}

@@ -3,7 +3,6 @@ package com.expandtesting.base;
 import com.expandtesting.drivers.GridDriverManager;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-
 /**
  * 2.1 — Framework Architecture: Base UI class.
  *
@@ -12,7 +11,6 @@ import org.openqa.selenium.WebDriver;
  * are triggered from here so page objects don't duplicate the logic.
  */
 public class BaseUi {
-
     /**
      * Returns the shared WebDriver instance for the current thread.
      */
@@ -42,10 +40,8 @@ public class BaseUi {
             return -1;
         }
     }
-
     /**
      * 3.5 — DOM readiness timing.
-     *
      * Returns the time between navigationStart and domContentLoadedEventEnd
      * (i.e. how long until the DOM was fully parsed and ready).
      */

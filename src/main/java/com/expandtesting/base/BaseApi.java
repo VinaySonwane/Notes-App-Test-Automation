@@ -139,7 +139,7 @@ public class BaseApi {
     /**
      * Returns {@code true} when the status code is one we should retry.
      */
-    private boolean isTransientStatus(int status) {
+    protected boolean isTransientStatus(int status) {
         for (int s : RETRY_ON_STATUS) {
             if (s == status) return true;
         }

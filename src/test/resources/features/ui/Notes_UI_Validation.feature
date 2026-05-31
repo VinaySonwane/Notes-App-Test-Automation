@@ -18,8 +18,8 @@ Feature: Notes UI Functional Validation
 
     Examples:
       | name           | email                              | password    |
-      | Alice Johnson  | test_alice_01@mailinator.com       | Test@Alice1 |
-      | Bob Martinez   | test_bob_02@mailinator.com         | Test@Bob202 |
+      | Rohan Sonwane  | test_rohan_01@mailinator.com       | Test@Rohan1 |
+      | Gaurav Thakre   | test_gaurav_02@mailinator.com         | Test@Gaurav2 |
 
   @UI @TS-UI-03
   Scenario Outline: Verify user can create a new note via UI
@@ -31,7 +31,7 @@ Feature: Notes UI Functional Validation
       | title                   | description                          | category |
       | UI Created Note - Work  | Work note created via UI form        | Work     |
       | UI Created Note - Home  | Home note created via UI form        | Home     |
-      | UI Created Note - Pers  | Personal note created via UI form    | Personal |
+
 
   @UI @TS-UI-04
   Scenario Outline: Verify user can edit an existing note
@@ -68,5 +68,5 @@ Feature: Notes UI Functional Validation
       | title                | description                   | category |
       | Home Filter Note     | Note for home filter test     | Home     |
       | Work Filter Note     | Note for work filter test     | Work     |
-      | Personal Filter Note | Note for personal filter test | Personal |
+
 

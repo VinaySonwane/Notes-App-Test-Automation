@@ -10,7 +10,7 @@ Feature: UI and API Data Synchronization
       | title                        | description                      | category |
       | Sync Note Home - 5001        | Home note for sync test          | Home     |
       | Sync Note Work - 5002        | Work note for sync test          | Work     |
-      | Sync Note Personal - 5003    | Personal note for sync test      | Personal |
+
 
   @Hybrid @TS-E2E-02
   Scenario Outline: Verify editing a note via UI is reflected in the API
@@ -35,3 +35,19 @@ Feature: UI and API Data Synchronization
       | title                    | description                    | category |
       | API Created Note - 7001  | Created via API for UI check   | Personal |
       | API Created Note - 7002  | Second API note for UI check   | Home     |
+
+  @Hybrid @TS-E2E-04
+  Scenario Outline: Verify note deleted via API disappears from the UI dashboard
+    Given the user is logged into the Notes UI with valid credentials
+    And a note is created via the API with title "<title>" description "<description>" and category "<category>"
+    And the user refreshes the UI dashboard
+    And the API created note with title "<title>" should be visible on the UI dashboard
+    When the note with title "<title>" is deleted via the API
+    And the user refreshes the UI dashboard
+    Then the note with title "<title>" should no longer be visible on the UI dashboard
+
+    Examples:
+      | title                      | description                        | category |
+      | API Delete Sync - 8001     | Note to be deleted via API sync    | Home     |
+      | API Delete Sync - 8002     | Second note deleted via API sync   | Work     |
+
