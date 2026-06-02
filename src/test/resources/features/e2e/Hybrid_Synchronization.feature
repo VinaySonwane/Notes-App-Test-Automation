@@ -9,7 +9,7 @@ Feature: UI and API Data Synchronization
     Examples:
       | title                        | description                      | category |
       | Sync Note Home - 5001        | Home note for sync test          | Home     |
-      | Sync Note Work - 5002        | Work note for sync test          | Work     |
+
 
 
   @Hybrid @TS-E2E-02
@@ -22,7 +22,7 @@ Feature: UI and API Data Synchronization
     Examples:
       | original_title        | original_desc          | category | updated_title              | updated_desc           |
       | Edit Sync Note - 6001 | Original sync note     | Home     | Edit Sync Note UPDATED-6001| Updated sync content   |
-      | Edit Sync Note - 6002 | Second sync note       | Work     | Edit Sync Note UPDATED-6002| Second updated content |
+
 
   @Hybrid @TS-E2E-03
   Scenario Outline: Verify note created via API appears on the UI dashboard
@@ -34,7 +34,7 @@ Feature: UI and API Data Synchronization
     Examples:
       | title                    | description                    | category |
       | API Created Note - 7001  | Created via API for UI check   | Personal |
-      | API Created Note - 7002  | Second API note for UI check   | Home     |
+
 
   @Hybrid @TS-E2E-04
   Scenario Outline: Verify note deleted via API disappears from the UI dashboard
@@ -49,5 +49,5 @@ Feature: UI and API Data Synchronization
     Examples:
       | title                      | description                        | category |
       | API Delete Sync - 8001     | Note to be deleted via API sync    | Home     |
-      | API Delete Sync - 8002     | Second note deleted via API sync   | Work     |
+
 

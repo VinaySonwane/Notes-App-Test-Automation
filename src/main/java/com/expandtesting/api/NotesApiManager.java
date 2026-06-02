@@ -11,30 +11,11 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.lessThan;
 
-/**
- * Central API manager — extends BaseApi so all calls inherit the shared
- * request spec, response-time SLA spec, and logging filters.
- *
- * 2.3 additions:
- *   • Response time < 2 000 ms enforced on every SLA-bearing call via BaseApi.slaSpec
- *   • JSON schema validation on Login, Create Note and Get Notes responses
- *   • Retry mechanism via BaseApi.executeWithRetry() for transient failures (503, 429, 500)
- *
- * 2.5 additions:
- *   • Every public method attaches its response body to the current Allure scenario
- *     via BaseApi.attachResponseToAllure() — not just console-logged
- *
- * 3.5 additions:
- *   • Every timed call records its duration via PerformanceLogger
- */
 public class NotesApiManager extends BaseApi {
 
-    private String authToken;
+    protected String authToken;
 
-    // ─────────────────────────────────────────────────────────────
     // AUTH
-    // ─────────────────────────────────────────────────────────────
-
     public void authenticate(String email, String password) {
         String payload = buildJson("email", email, "password", password);
 
@@ -58,9 +39,7 @@ public class NotesApiManager extends BaseApi {
         this.authToken = response.jsonPath().getString("data.token");
     }
 
-    /**
-     * TS-API-01 — Returns raw login response for step-level assertions.
-     */
+
     public Response loginAndGetResponse(String email, String password) {
         String payload = buildJson("email", email, "password", password);
 
@@ -85,10 +64,8 @@ public class NotesApiManager extends BaseApi {
         return response;
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // CREATE
-    // ─────────────────────────────────────────────────────────────
 
+    // CREATE
     public void createNoteViaApi(String title, String description, String category) {
         String payload = buildNoteJson(title, description, category);
 
@@ -132,9 +109,7 @@ public class NotesApiManager extends BaseApi {
         return response.path("data.id");
     }
 
-    /**
-     * TS-API-03 — Creates a note, validates schema, and returns the full response.
-     */
+
     public Response createNoteAndGetResponse(String title, String description, String category) {
         String payload = buildNoteJson(title, description, category);
 
@@ -160,10 +135,8 @@ public class NotesApiManager extends BaseApi {
         return response;
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // READ
-    // ─────────────────────────────────────────────────────────────
 
+    // READ
     public boolean verifyNoteExists(String expectedTitle) {
         long start = System.currentTimeMillis();
         Response response = executeWithRetry("verifyNoteExists GET /notes", () ->
@@ -186,7 +159,7 @@ public class NotesApiManager extends BaseApi {
         return titles != null && titles.contains(expectedTitle);
     }
 
-    /** TS-API-05 — Fetches a single note by ID with SLA check. */
+
     public Response getNoteById(String noteId) {
         long start = System.currentTimeMillis();
         Response response = executeWithRetry("getNoteById GET /notes/" + noteId, () ->
@@ -214,11 +187,7 @@ public class NotesApiManager extends BaseApi {
         return response;
     }
 
-    // ─────────────────────────────────────────────────────────────
     // UPDATE
-    // ─────────────────────────────────────────────────────────────
-
-    /** TS-API-04 — Full replace via PUT with SLA check and retry. */
     public Response putNote(String noteId, String title, String description, String category) {
         String payload = buildNoteJson(title, description, category);
 
@@ -239,14 +208,7 @@ public class NotesApiManager extends BaseApi {
         return response;
     }
 
-    // ─────────────────────────────────────────────────────────────
     // DELETE
-    // ─────────────────────────────────────────────────────────────
-
-    /**
-     * TS-API-06 — Deletes a valid note by its ID with SLA check and performance logging.
-     * Returns the raw response so the step definition can assert status and body.
-     */
     public Response deleteNoteById(String noteId) {
         long start = System.currentTimeMillis();
         Response response = executeWithRetry("deleteNoteById DELETE /notes/" + noteId, () ->
@@ -275,10 +237,8 @@ public class NotesApiManager extends BaseApi {
         return response;
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // NEGATIVE
-    // ─────────────────────────────────────────────────────────────
 
+    // NEGATIVE
     public Response createNoteWithMissingTitle(String description, String category) {
         String payload = "{ \"description\": \"" + description + "\", \"category\": \"" + category + "\" }";
 
@@ -299,10 +259,9 @@ public class NotesApiManager extends BaseApi {
 
     public String getAuthToken() { return authToken; }
 
-    // ─────────────────────────────────────────────────────────────
-    // HELPERS
-    // ─────────────────────────────────────────────────────────────
 
+
+    // HELPERS
     private String buildNoteJson(String title, String description, String category) {
         return "{ \"title\": \"" + title
                 + "\", \"description\": \"" + description

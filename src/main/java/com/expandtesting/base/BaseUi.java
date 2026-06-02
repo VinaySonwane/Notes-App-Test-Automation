@@ -3,30 +3,13 @@ package com.expandtesting.base;
 import com.expandtesting.drivers.GridDriverManager;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-/**
- * 2.1 — Framework Architecture: Base UI class.
- *
- * Provides shared WebDriver access and Navigation Timing API helpers
- * used by all Page Object classes.  Section 3.5 performance measurements
- * are triggered from here so page objects don't duplicate the logic.
- */
+
 public class BaseUi {
-    /**
-     * Returns the shared WebDriver instance for the current thread.
-     */
+
     protected WebDriver getDriver() {
         return GridDriverManager.getDriver();
     }
 
-    /**
-     * 3.5 — Performance Engineering: Navigation Timing API.
-     *
-     * Reads window.performance.timing from the browser after a page load
-     * and returns the total page-load duration in milliseconds:
-     *   loadEventEnd − navigationStart
-     *
-     * Returns -1 if the timing data is not yet available.
-     */
     public long getPageLoadTimeMs() {
         try {
             JavascriptExecutor js = (JavascriptExecutor) getDriver();
@@ -40,11 +23,7 @@ public class BaseUi {
             return -1;
         }
     }
-    /**
-     * 3.5 — DOM readiness timing.
-     * Returns the time between navigationStart and domContentLoadedEventEnd
-     * (i.e. how long until the DOM was fully parsed and ready).
-     */
+
     public long getDomReadyTimeMs() {
         try {
             JavascriptExecutor js = (JavascriptExecutor) getDriver();

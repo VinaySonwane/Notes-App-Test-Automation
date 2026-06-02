@@ -83,20 +83,9 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                     </suiteXmlFiles>
-                    <!--
-                                            testFailureIgnore=true — Maven exits 0 even when tests fail.
-                                            Jenkins reads TestNG/Allure XML directly to decide build status.
-                                            Without this, known-defect failures would exit non-zero and
-                                            break the pipeline before catchError can handle them.
-                                         -->
+
                     <testFailureIgnore>true</testFailureIgnore>
-                    <!--
-                                            NO argLine / AspectJ javaagent here.
-                                            Screenshots attach via scenario.attach() and Allure.addAttachment()
-                                            in Hooks.java — both work without AspectJ weaving.
-                                            The @Attachment annotation in ScreenshotUtils is a tertiary fallback
-                                            only; removing the javaagent has zero impact on screenshot capture.
-                                         -->
+
                     <systemPropertyVariables>
 
                         <allure.results.directory>target/allure-results</allure.results.directory>

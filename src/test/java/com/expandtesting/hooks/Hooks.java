@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 
 public class Hooks {
 
-    private final BaseUi baseUi = new BaseUi() {};  // anonymous subclass to access protected methods
+    protected  final BaseUi baseUi = new BaseUi() {};
 
     @Before
     public void setup() {
@@ -26,7 +26,6 @@ public class Hooks {
     @After
     public void tearDown(Scenario scenario) {
 
-        // ── 3.5 — UI timing: capture Navigation Timing API data after each scenario ──
         try {
             long pageLoadMs  = baseUi.getPageLoadTimeMs();
             long domReadyMs  = baseUi.getDomReadyTimeMs();
@@ -39,10 +38,10 @@ public class Hooks {
                 PerformanceLogger.logUiTiming(scenName, "domReady",  domReadyMs, 2000);
             }
         } catch (Exception ignored) {
-            // Driver may already be closed for API-only scenarios — safe to ignore
+
         }
 
-        // ── Screenshot on failure ────────────────────────────────────────────────────
+
         if (scenario.isFailed()) {
             byte[] screenshot = ScreenshotUtils.captureScreenshot();
             if (screenshot.length > 0) {
@@ -59,7 +58,6 @@ public class Hooks {
             }
         }
 
-        // ── 3.5 — Attach performance-log.csv to Allure at end of each scenario ─────
         try {
             File perfLog = new File("target/performance-log.csv");
             if (perfLog.exists()) {
@@ -72,7 +70,6 @@ public class Hooks {
             }
         } catch (Exception ignored) {}
 
-        // ── Driver quit AFTER all data collection ────────────────────────────────────
         GridDriverManager.quitDriver();
     }
 }

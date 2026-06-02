@@ -5,28 +5,23 @@ import com.expandtesting.config.ConfigReader;
 import com.expandtesting.pages.LoginPage;
 import com.expandtesting.pages.NotesPage;
 import com.expandtesting.drivers.GridDriverManager;
+import io.restassured.response.Response;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.testng.Assert;
 
-/**
- * Step definitions for Hybrid (UI + API) synchronization scenarios.
- * All test data is supplied via Scenario Outline Examples tables —
- * no Faker / random data generation is used here.
- */
+
 public class HybridSyncSteps {
 
     NotesPage       notesPage  = new NotesPage();
     LoginPage       loginPage  = new LoginPage();
     NotesApiManager apiManager = new NotesApiManager();
 
-    // Shared state
-    private String noteTitle;
-    private String apiCreatedTitle;
 
-    // ─── Shared login step ───────────────────────────────────────
+    protected String noteTitle;
+    protected String apiCreatedTitle;
 
     @Given("the user is logged into the Notes UI with valid credentials")
     public void userIsLoggedIntoUI() {
@@ -45,12 +40,7 @@ public class HybridSyncSteps {
         );
     }
 
-    // ─── TS-E2E-01: UI → API note sync ──────────────────────────
-
-    /**
-     * TS-E2E-01: Title, description, category all from Examples table.
-     * Previously Faker-generated inside createDynamicNoteViaUI().
-     */
+    // ─── TS-E2E-01: UI → API note sync
     @When("the user creates a note via UI with title {string} description {string} and category {string}")
     public void createNoteViaUI(String title, String description, String category) {
         this.noteTitle = title;
@@ -70,12 +60,8 @@ public class HybridSyncSteps {
         );
     }
 
-    // ─── TS-E2E-02: UI edit → API sync ──────────────────────────
+    // ─── TS-E2E-02: UI edit → API sync
 
-    /**
-     * TS-E2E-02: All values from Examples table.
-     * Previously Faker-generated titles.
-     */
     @And("a note exists via UI with title {string} description {string} category {string}")
     public void aNoteExistsViaUI(String title, String description, String category) {
         this.noteTitle = title;
@@ -92,14 +78,9 @@ public class HybridSyncSteps {
         this.noteTitle = updatedTitle;
     }
 
-    // ─── TS-E2E-03: API → UI sync ────────────────────────────────
+    // ─── TS-E2E-03: API → UI sync
+    protected String apiCreatedNoteId;
 
-    private String apiCreatedNoteId;
-
-    /**
-     * TS-E2E-03: Creates a note via the API and verifies it appears on the UI dashboard.
-     * Title, description, category all from Examples table.
-     */
     @When("a note is created via the API with title {string} description {string} and category {string}")
     public void noteIsCreatedViaAPI(String title, String description, String category) {
         this.apiCreatedTitle  = title;
@@ -115,20 +96,14 @@ public class HybridSyncSteps {
         );
     }
 
-    // ─── TS-E2E-04: API delete → UI disappears ───────────────────
-
-    /**
-     * TS-E2E-04: Deletes the previously API-created note by its stored ID,
-     * then verifies it is no longer visible on the UI dashboard.
-     * Closes the gap in FR-07: "deleted note must disappear from UI".
-     */
+    // ─── TS-E2E-04: API delete → UI disappears
     @When("the note with title {string} is deleted via the API")
     public void deleteNoteViaApi(String title) {
         Assert.assertNotNull(
                 apiCreatedNoteId,
                 "No API-created note ID in context — ensure the creation step ran first for: " + title
         );
-        io.restassured.response.Response response = apiManager.deleteNoteById(apiCreatedNoteId);
+        Response response = apiManager.deleteNoteById(apiCreatedNoteId);
         Assert.assertEquals(
                 response.getStatusCode(), 200,
                 "API DELETE did not return 200 for note: " + title + " (id=" + apiCreatedNoteId + ")"
@@ -144,5 +119,14 @@ public class HybridSyncSteps {
                 "Note still visible on UI dashboard after API deletion: " + title
         );
     }
+
+    // ─── Dashboard refresh
+
+    @When("the user refreshes the UI dashboard")
+    public void userRefreshesDashboard() {
+        GridDriverManager.getDriver().navigate().refresh();
+        com.expandtesting.utils.AdDismissalUtils.dismissAds();
+    }
 }
+
 

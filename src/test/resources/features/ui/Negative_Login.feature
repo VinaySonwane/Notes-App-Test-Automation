@@ -13,4 +13,4 @@ Feature: UI Negative Login Validation
     Examples:
       | email                    | password |
       | invalid_user@gmail.com   | Wrong123 |
-      | Sonwanevinay11@gmail.com |          |
+

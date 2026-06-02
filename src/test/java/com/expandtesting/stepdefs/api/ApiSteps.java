@@ -9,11 +9,7 @@ import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import org.testng.Assert;
 
-/**
- * Step definitions for API scenarios.
- * All test data is supplied via Scenario Outline Examples tables —
- * no Faker / random data generation is used here.
- */
+
 public class ApiSteps {
 
     NotesApiManager apiManager = new NotesApiManager();
@@ -24,8 +20,9 @@ public class ApiSteps {
     private String   createdNoteTitle;
     private String   createdNoteCategory;
 
-    // ─── Auth ───────────────────────────────────────────────────
 
+
+    // ─── Auth ───
     @Given("the user is authenticated via the API")
     public void theUserIsAuthenticatedViaTheAPI() {
         apiManager.authenticate(
@@ -34,12 +31,7 @@ public class ApiSteps {
         );
     }
 
-    // ─── TS-API-01: Login token ──────────────────────────────────
-
-    /**
-     * TS-API-01: Credentials come from the Examples table.
-     * Previously read directly from config — now fully data-driven.
-     */
+    // ─── TS-API-01: Login token ──────
     @When("the user sends a POST login request with email {string} and password {string}")
     public void userSendsPostLoginRequest(String email, String password) {
         lastResponse = apiManager.loginAndGetResponse(email, password);
@@ -58,15 +50,11 @@ public class ApiSteps {
         Assert.assertFalse(token.trim().isEmpty(), "Auth token is empty in response");
     }
 
-    // ─── TS-API-02: GET notes SLA ────────────────────────────────
+    // ─── TS-API-02: GET notes SLA ──────
 
-    /**
-     * TS-API-02: Seed title comes from the Examples table.
-     * Previously hardcoded "Pure API Validation".
-     */
-    @When("the user requests to fetch all notes with seed title {string}")
-    public void theUserRequestsToFetchAllNotes(String seedTitle) {
-        apiManager.createNoteViaApi(seedTitle, "Testing GET endpoint", "Personal");
+    @When("the user requests to fetch all notes with seed title {string} description {string} category {string}")
+    public void theUserRequestsToFetchAllNotes(String seedTitle,String description,String category) {
+        apiManager.createNoteViaApi(seedTitle, description , category);
     }
 
     @Then("the API response should contain the note {string}")
@@ -77,12 +65,8 @@ public class ApiSteps {
         );
     }
 
-    // ─── TS-API-03: POST create note ─────────────────────────────
+    // ─── TS-API-03: POST create note ─────
 
-    /**
-     * TS-API-03: Title, description, category all from Examples table.
-     * Previously Faker-generated.
-     */
     @When("the user creates a note via API with title {string} description {string} and category {string}")
     public void userCreatesNoteViaApi(String title, String description, String category) {
         createdNoteTitle    = title;
@@ -100,12 +84,7 @@ public class ApiSteps {
         );
     }
 
-    // ─── Shared setup for PUT / GET-by-ID ────────────────────────
-
-    /**
-     * Shared pre-condition for TS-API-04 and TS-API-05.
-     * Title, description, category all from Examples table — no Faker.
-     */
+    // ─── Shared setup for PUT / GET-by-ID ───
     @And("a note is created via the API with title {string} description {string} category {string}")
     public void noteCreatedViaAPIWithDetails(String title, String description, String category) {
         createdNoteTitle    = title;
@@ -115,12 +94,8 @@ public class ApiSteps {
                 "Could not create a note for update testing: " + title);
     }
 
-    // ─── TS-API-04: PUT update ───────────────────────────────────
+    // ─── TS-API-04: PUT update ───
 
-    /**
-     * TS-API-04: Updated title and description from Examples table.
-     * Previously Faker-generated.
-     */
     @When("the user sends a PUT request to update with title {string} and description {string}")
     public void userSendsPutRequest(String updatedTitle, String updatedDesc) {
         lastResponse = apiManager.putNote(
@@ -138,7 +113,7 @@ public class ApiSteps {
                 "PUT response title does not match the title we sent");
     }
 
-    // ─── TS-API-05: GET by ID ────────────────────────────────────
+    // ─── TS-API-05: GET by ID ───
 
     @When("the user sends a GET request for that specific note ID")
     public void userSendsGetByIdRequest() {
@@ -154,14 +129,8 @@ public class ApiSteps {
                 "Returned note ID does not match the one we created");
     }
 
-    // ─── TS-API-06: DELETE note by valid ID ──────────────────────
+    // ─── TS-API-06: DELETE note by valid ID ───
 
-    /**
-     * TS-API-06: Delete a valid note via DELETE /notes/{id}.
-     * The note to delete is the one already created by the shared
-     * "a note is created via the API" @And pre-condition step,
-     * so createdNoteId is already populated.
-     */
     @When("the user sends a DELETE request for that specific note ID")
     public void userSendsDeleteByIdRequest() {
         lastResponse = apiManager.deleteNoteById(createdNoteId);
@@ -179,12 +148,8 @@ public class ApiSteps {
         );
     }
 
-    // ─── TS-NEG-04: POST missing title ───────────────────────────
+    // ─── TS-NEG-04: POST missing title ────
 
-    /**
-     * TS-NEG-04: Description and category from Examples table.
-     * Previously Faker-generated description.
-     */
     @When("the user sends a POST notes request with missing title but description {string} and category {string}")
     public void userSendsPostNotesWithMissingTitle(String description, String category) {
         lastResponse = apiManager.createNoteWithMissingTitle(description, category);
@@ -197,4 +162,36 @@ public class ApiSteps {
                         + lastResponse.getStatusCode()
                         + ". Body: " + lastResponse.getBody().asString());
     }
+
+    // ─── TS-NEG-03: API Security — unauthorized access ────
+
+    @When("a GET request is sent to {string} without an auth token")
+    public void getRequestWithoutToken(String endpoint) {
+        lastResponse = apiManager.getNotesWithoutToken();
+    }
+
+    @Then("the API should return a {int} Unauthorized status")
+    public void apiShouldReturnUnauthorized(int expectedStatus) {
+        Assert.assertEquals(lastResponse.getStatusCode(), expectedStatus,
+                "API did not block unauthorized access!");
+    }
+
+    // ─── TS-NEG-05: Delete invalid note ID ────
+
+    @When("a DELETE request is sent for an invalid note ID {string}")
+    public void deleteRequestInvalidId(String invalidId) {
+        apiManager.authenticate(
+                ConfigReader.getProperty("test.email"),
+                ConfigReader.getProperty("test.password")
+        );
+        lastResponse = apiManager.deleteInvalidNote(invalidId);
+    }
+
+    @Then("the API should return a {int} or {int} error status code")
+    public void apiShouldReturnErrorStatus(int status1, int status2) {
+        int actualStatus = lastResponse.getStatusCode();
+        Assert.assertTrue(actualStatus == status1 || actualStatus == status2,
+                "Expected " + status1 + " or " + status2 + ", but got: " + actualStatus);
+    }
 }
+

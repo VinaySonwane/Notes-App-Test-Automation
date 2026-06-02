@@ -10,16 +10,6 @@ import java.io.ByteArrayInputStream;
 
 public class ScreenshotUtils {
 
-    /**
-     * Captures a screenshot and returns raw bytes.
-     * Called from Hooks.java which passes the bytes to:
-     *   1. scenario.attach()        — via Cucumber event bus (primary)
-     *   2. Allure.addAttachment()   — direct Allure lifecycle (secondary)
-
-
-     * No AspectJ / @Attachment needed. Both paths above work on Jenkins
-     * without any javaagent argument.
-     */
     public static byte[] captureScreenshot() {
         WebDriver driver = GridDriverManager.getDriver();
         if (driver == null) return new byte[0];
@@ -30,11 +20,7 @@ public class ScreenshotUtils {
             return new byte[0];
         }
     }
-
-    /**
-     * Attaches screenshot bytes directly to the Allure lifecycle.
-     * Used as secondary path from Hooks.java alongside scenario.attach().
-     */
+    
     public static void attachToAllure(String name, byte[] screenshotBytes) {
         if (screenshotBytes == null || screenshotBytes.length == 0) return;
         try {

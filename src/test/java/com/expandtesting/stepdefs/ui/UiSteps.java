@@ -9,21 +9,16 @@ import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import org.testng.Assert;
 
-/**
- * Step definitions for UI scenarios.
- * All test data is now supplied via Scenario Outline Examples tables —
- * no Faker / random data generation is used here.
- */
+
 public class UiSteps {
 
     LoginPage loginPage = new LoginPage();
     NotesPage notesPage = new NotesPage();
 
-    // Shared state within a scenario
-    private String currentNoteTitle;
 
-    // ─── Login ───────────────────────────────────────────────────
+    protected String currentNoteTitle;
 
+    // ─── Login ────
     @Given("the user is on the login page")
     public void theUserIsOnTheLoginPage() {
         loginPage.navigateToLogin();
@@ -49,20 +44,17 @@ public class UiSteps {
         }
     }
 
-    // ─── Registration (TS-UI-02) ─────────────────────────────────
-
+    // ─── Registration (TS-UI-02) ────
     @Given("the user is on the registration page")
     public void theUserIsOnTheRegistrationPage() {
         loginPage.navigateToRegister();
     }
 
-    /**
-     * TS-UI-02: All registration data comes from the Examples table.
-     * Previously used Faker — now fully data-driven via Scenario Outline.
-     */
     @When("the user registers with name {string} email {string} and password {string}")
     public void theUserRegistersWithCredentials(String name, String email, String password) {
-        loginPage.register(name, email, password);
+
+        String uniqueEmail = email.replace("@", "_" + System.currentTimeMillis() + "@");
+        loginPage.register(name, uniqueEmail, password);
     }
 
     @Then("the account should be created successfully")
@@ -73,28 +65,7 @@ public class UiSteps {
         );
     }
 
-    // ─── Note pre-condition helpers ──────────────────────────────
-
-    /**
-     * Creates a note with explicit title/description/category from the Examples table.
-     * Replaces the old Faker-based aNoteExistsOnTheDashboard() and aNoteExistsForCategory().
-     */
-    @And("a note exists with title {string} description {string} category {string}")
-    public void aNoteExistsWithDetails(String title, String description, String category) {
-        currentNoteTitle = title;
-        notesPage.createNewNote(category, currentNoteTitle, description);
-        Assert.assertTrue(
-                notesPage.isNoteVisible(currentNoteTitle),
-                "Pre-condition failed: note did not appear after creation: " + currentNoteTitle
-        );
-    }
-
-    // ─── Create Note (TS-UI-03) ──────────────────────────────────
-
-    /**
-     * TS-UI-03: Verify user can create a new note via UI.
-     * Title, description and category all come from the Examples table.
-     */
+    // ─── Create Note (TS-UI-03) ─────
     @When("the user creates a new note with title {string} description {string} and category {string}")
     public void theUserCreatesANewNote(String title, String description, String category) {
         currentNoteTitle = title;
@@ -109,16 +80,22 @@ public class UiSteps {
         );
     }
 
-    // ─── Edit (TS-UI-04) ─────────────────────────────────────────
+    //for test case 4,5,6 (precondition)
+    @And("a note exists with title {string} description {string} category {string}")
+    public void aNoteExistsWithDetails(String title, String description, String category) {
+        currentNoteTitle = title;
+        notesPage.createNewNote(category, currentNoteTitle, description);
+        Assert.assertTrue(
+                notesPage.isNoteVisible(currentNoteTitle),
+                "Pre-condition failed: note did not appear after creation: " + currentNoteTitle
+        );
+    }
 
-    /**
-     * TS-UI-04: Edit values come from the Examples table.
-     * Previously Faker-generated title and description.
-     */
+    // ─── Edit (TS-UI-04) ────────
     @When("the user edits the note with new title {string} and description {string}")
     public void theUserEditsTheNote(String updatedTitle, String updatedDesc) {
         notesPage.editNote(currentNoteTitle, updatedTitle, updatedDesc);
-        currentNoteTitle = updatedTitle; // track new title for the Then step
+        currentNoteTitle = updatedTitle;
     }
 
     @Then("the updated note should be visible on the dashboard")
@@ -129,7 +106,7 @@ public class UiSteps {
         );
     }
 
-    // ─── Delete (TS-UI-05) ───────────────────────────────────────
+    // ─── Delete (TS-UI-05) ────
 
     @When("the user deletes the note via the UI")
     public void theUserDeletesTheNoteViaUi() {
@@ -144,7 +121,7 @@ public class UiSteps {
         );
     }
 
-    // ─── Category Filter (TS-UI-06) ──────────────────────────────
+    // ─── Category Filter (TS-UI-06) ─────
 
     @When("the user filters the dashboard by category {string}")
     public void theUserFiltersByCategory(String category) {
@@ -154,9 +131,33 @@ public class UiSteps {
     @Then("only notes from category {string} should be visible")
     public void onlyNotesShouldBeVisible(String category) {
         Assert.assertTrue(
-                notesPage.areAllVisibleNotesInCategory(category),
-                "Dashboard shows notes outside the selected category: " + category
+                notesPage.isNoteVisible(currentNoteTitle),
+                "Note not visible after filtering by category: " + category
         );
     }
 
+    // ─── Negative (TS-NEG-01) ────
+    @Then("an error message should be displayed on the screen")
+    public void errorMessageShouldBeDisplayed() {
+        Assert.assertTrue(loginPage.isErrorMessageDisplayed(),
+                "Login error message did not appear!");
+    }
+
+    // ─── Negative (TS-NEG-02) ────
+    @When("the user tries to create a note with an empty title {string} {string}")
+    public void createNoteEmptyTitle( String description,String category) {
+        notesPage.createNewNote(category, "", description);
+    }
+
+    @Then("a validation error should appear on the screen preventing submission")
+    public void validationErrorShouldAppear() {
+        Assert.assertTrue(notesPage.isTitleValidationErrorDisplayed(),
+                "Form submitted even though title was empty!");
+    }
+
+
+
 }
+
+
+

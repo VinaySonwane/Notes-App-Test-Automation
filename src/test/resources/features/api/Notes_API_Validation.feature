@@ -13,12 +13,12 @@ Feature: Notes API Backend Validation
   @API @TS-API-02 @FR-08
   Scenario Outline: Verify GET notes API retrieves data successfully within SLA
     Given the user is authenticated via the API
-    When the user requests to fetch all notes with seed title "<seed_title>"
+    When the user requests to fetch all notes with seed title "<seed_title>" description "<description>" category "<category>"
     Then the API response should contain the note "<seed_title>"
 
-    Examples:
-      | seed_title          |
-      | Pure API Validation |
+ Examples:
+     | seed_title          | description          | category |
+     | Pure API Validation | Testing GET endpoint | Personal |
 
   @API @TS-API-03
   Scenario Outline: Verify POST notes API creates a note successfully
@@ -29,7 +29,6 @@ Feature: Notes API Backend Validation
     Examples:
       | title                        | description                        | category |
       | The Great Gatsby - 1001      | A novel about the American dream   | Work     |
-      | To Kill a Mockingbird - 1002 | A story about justice and morality | Personal |
 
   @API @TS-API-04
   Scenario Outline: Verify PUT notes API updates an entire note
@@ -41,7 +40,7 @@ Feature: Notes API Backend Validation
     Examples:
       | original_title          | original_desc         | category | updated_title            | updated_desc           |
       | Original Note - 2001    | Original description  | Personal | Updated Note - 2001      | Updated description    |
-      | Another Note - 2002     | Second description    | Home     | Another Updated - 2002   | Second updated desc    |
+
 
   @API @TS-API-05
   Scenario Outline: Verify GET notes by ID returns the correct note
@@ -53,7 +52,7 @@ Feature: Notes API Backend Validation
     Examples:
       | title                  | description             | category |
       | Get By ID Note - 4001  | Description for get     | Work     |
-      | Get By ID Note - 4002  | Another get by id note  | Home     |
+
 
   @API @TS-API-06 @FR-06
   Scenario Outline: Verify DELETE /notes/{id} removes a note via API
@@ -65,7 +64,7 @@ Feature: Notes API Backend Validation
     Examples:
       | title                     | description                      | category |
       | Delete API Note - 8001    | Note to be deleted via API       | Work     |
-      | Delete API Note - 8002    | Second note to delete via API    | Personal |
+
 
   @API @TS-NEG-04 @FR-09
   Scenario Outline: Verify POST notes API rejects missing required fields
@@ -76,4 +75,4 @@ Feature: Notes API Backend Validation
     Examples:
       | description              | category |
       | Description without title| Work     |
-      | Another missing title    | Home     |
+

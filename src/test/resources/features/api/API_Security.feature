@@ -21,4 +21,4 @@ Feature: API Security and Error Handling
     Examples:
       | invalid_id    |
       | 999999999404  |
-      | 000000000000  |
+

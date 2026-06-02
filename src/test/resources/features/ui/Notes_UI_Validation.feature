@@ -19,7 +19,7 @@ Feature: Notes UI Functional Validation
     Examples:
       | name           | email                              | password    |
       | Rohan Sonwane  | test_rohan_01@mailinator.com       | Test@Rohan1 |
-      | Gaurav Thakre   | test_gaurav_02@mailinator.com         | Test@Gaurav2 |
+
 
   @UI @TS-UI-03
   Scenario Outline: Verify user can create a new note via UI
@@ -30,7 +30,7 @@ Feature: Notes UI Functional Validation
     Examples:
       | title                   | description                          | category |
       | UI Created Note - Work  | Work note created via UI form        | Work     |
-      | UI Created Note - Home  | Home note created via UI form        | Home     |
+
 
 
   @UI @TS-UI-04
@@ -43,7 +43,7 @@ Feature: Notes UI Functional Validation
     Examples:
       | original_title         | original_desc              | category | updated_title              | updated_desc                |
       | My First Note          | This is the original text  | Work     | My First Note - EDITED     | Updated description text    |
-      | Shopping Reminder      | Buy groceries this weekend | Home     | Shopping Reminder - EDITED | Groceries updated list      |
+
 
   @UI @TS-UI-05
   Scenario Outline: Verify user can delete a note via the UI
@@ -55,7 +55,7 @@ Feature: Notes UI Functional Validation
     Examples:
       | title              | description                  | category |
       | Note To Delete 01  | This note will be deleted    | Work     |
-      | Note To Delete 02  | Another note for deletion    | Home     |
+
 
   @UI @TS-UI-06
   Scenario Outline: Verify category filter shows only matching notes
@@ -67,6 +67,6 @@ Feature: Notes UI Functional Validation
     Examples:
       | title                | description                   | category |
       | Home Filter Note     | Note for home filter test     | Home     |
-      | Work Filter Note     | Note for work filter test     | Work     |
+
 
 

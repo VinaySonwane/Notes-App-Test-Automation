@@ -6,5 +6,8 @@ Feature: UI Negative Form Validation
   @UI @TS-NEG-02 @FR-09
   Scenario: Verify note creation fails with missing required fields
     Given the user is logged into the Notes UI with valid credentials
-    When the user tries to create a note with an empty title
+    When the user tries to create a note with an empty title "<description>" "<category>"
     Then a validation error should appear on the screen preventing submission
+ Examples:
+        | description                        | category |
+        | This note has no title             | Work     |
